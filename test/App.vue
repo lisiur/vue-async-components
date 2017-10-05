@@ -2,8 +2,7 @@
   <div id="app">
 
     <async-wrapper :promise="promises.init">
-      <div slot="pending">pending</div>
-      <div>{{$safeProp('username', user)}}</div>
+      <div>{{$propOr('username', 'username', user)}}</div>
     </async-wrapper>
 
     <button class="btn" @click="reload">
@@ -12,11 +11,14 @@
         <div>{{$safeProp('username', user)}}</div>
       </async-loading>
     </button>
+    
+    <br>
 
     <button class="btn" @click="reload">
       <async-loading :promise="promises.init"
                      type="bounces"
                      :size="8"
+                     :min-last="5000"
                      :classes="['bh-bg-primary']">
         <div>{{$safeProp('username', user)}}</div>
       </async-loading>

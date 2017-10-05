@@ -1,7 +1,12 @@
 <template>
   <div class="async-wrapper">
     <div class="async-wrapper-pending" v-if="pending">
-      <slot name="pending"></slot>
+      <template v-if="$slots.pending">
+        <slot name="pending"></slot>
+      </template>
+      <template v-else>
+        <slot></slot>
+      </template>
     </div>
     <div class="async-wrapper-finished" v-if="!pending">
       <div class="async-wrapper-done" v-if="done">
@@ -15,56 +20,85 @@
   </div>
 </template>
 <script>
+function _state(vm, status) {
+  if (status === 'pending') {
+    vm.status = 'pending'
+    vm.pending = true
+    vm.done = false
+    vm.fail = false
+  } else if (status === 'done') {
+    vm.status = 'done'
+    vm.pending = false
+    vm.done = true
+    vm.fail = false
+  } else if (status === 'fail') {
+    vm.status = 'fail'
+    vm.pending = false
+    vm.done = false
+    vm.fail = true
+  } else {
+    vm.status = 'init'
+    vm.pending = false
+    vm.done = false
+    vm.fail = false
+  } 
+}
+function _sync(vm, promise) {
+  if (vm.status === 'pending' && vm.throttle) {
+    console.warn('current promise is pending')
+    return
+  }
+
+  _state(vm, 'pending')
+  const startTime = new Date()
+
+  if (vm.promise === null) return
+  vm.promise.then(res => {
+    const alredayTime = new Date() - startTime
+    setTimeout(function() {
+      _state(vm, 'done')
+    }, vm.minLast - alredayTime)
+  }, ex => {
+    const alredayTime = new Date() - startTime
+    setTimeout(function() {
+      _state(vm, 'fail')
+    }, vm.minLast - alredayTime)
+    throw ex
+  })
+}
 export default {
   props: {
     promise: {
       type: Promise,
       default: () => Promise.resolve()
+    },
+    throttle: {
+      type: Boolean,
+      default: true
+    },
+    minLast: {
+      type: Number,
+      default: 0
     }
   },
   data: () => ({
     pending: false,
     done: false,
     fail: false,
+    status: 'init',
   }),
   methods: {
-    state(status) {
-      if (status === 'pending') {
-        this.pending = true
-        this.done = false
-        this.fail = false
-      } else if (status === 'done') {
-        this.pending = false
-        this.done = true
-        this.fail = false
-      } else if (status === 'fail') {
-        this.pending = false
-        this.done = false
-        this.fail = true
-      } else {
-        this.pending = false
-        this.done = false
-        this.fail = false
-      }
-    },
-    sync() {
-      this.state('pending')
-      if (this.promise === null) return
-      this.promise.then(res => {
-        this.state('done')
-      }, ex => {
-        this.state('fail')
-        throw ex
-      })
+    getCurrentStatus() {
+      return this.status
     }
   },
   watch: {
     promise() {
-      this.sync()
+      _sync(this)
     }
   },
   mounted() {
-    this.sync()
+    _sync(this)
   }
 }
 </script>
