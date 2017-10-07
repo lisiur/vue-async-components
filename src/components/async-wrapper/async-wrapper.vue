@@ -77,7 +77,7 @@ export default {
       default: true
     },
     minLast: {
-      type: Number,
+      type: [ Number, String ],
       default: 0
     }
   },

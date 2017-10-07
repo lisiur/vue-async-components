@@ -25,7 +25,7 @@
       },
       // loading size
       size: {
-        type: Number,
+        type: [ Number, String ],
         default: 20,
       },
       // loading color
@@ -40,7 +40,7 @@
       },
       // pending status lasts at least minLast
       minLast: {
-        type: Number,
+        type: [ Number, String ],
         default: 0
       },
       // promise
@@ -48,8 +48,6 @@
         type: Promise,
         default: () => Promise.resolve()
       }
-    },
-    methods: {
     },
     components: { AsyncWrapper, Rainbow, Bounces, CircleBounces }
   }

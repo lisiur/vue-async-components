@@ -19,30 +19,38 @@
     </div>
   </div>
 </template>
+<script>
+  export default {
+    props: {
+      size: {
+        type: Number,
+        default: 20
+      }
+    }
+  }
+</script>
 <style scoped>
 .loader {
-  width: 100%;
-  height: 100%;
-    /* background: #000;
-    background: radial-gradient(#222, #000);
-    bottom: 0;
-    left: 0;
-    overflow: hidden;
-    position: fixed;
-    right: 0;
-    top: 0;
-    z-index: 99999; */
+  background: #000;
+  background: radial-gradient(#222, #000);
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 99999;
 }
 
 .loader-inner {
-    /* bottom: 0;
+    bottom: 0;
     height: 60px;
     left: 0;
     margin: auto;
     position: absolute;
     right: 0;
     top: 0;
-    width: 100px; */
+    width: 100px;
 }
 
 .loader-line-wrap {
